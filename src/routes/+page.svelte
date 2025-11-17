@@ -115,6 +115,19 @@ VALUES (
 		}
 	}
 
+	// Track expanded SQL statements per row
+	let expandedRows = $state<Set<number>>(new Set());
+
+	function toggleSQLExpanded(index: number) {
+		const newExpanded = new Set(expandedRows);
+		if (newExpanded.has(index)) {
+			newExpanded.delete(index);
+		} else {
+			newExpanded.add(index);
+		}
+		expandedRows = newExpanded;
+	}
+
 	// Query execution
 	let query = $state('SELECT @@SERVERNAME');
 	let queryResults: any = $state(null);
@@ -186,7 +199,7 @@ VALUES (
 						<th>LEVEL_NO</th>
 						<th>LEVEL_SUB</th>
 						<th>LEVEL_HINT</th>
-						<th>LEVEL_HINT</th>
+						<th>ELEMENT_NM</th>
 						<th>DEFAULT_VALUE_TYPE_CD</th>
 						<th>START_POS</th>
 						<th>WIDTH</th>
@@ -205,17 +218,40 @@ VALUES (
 				<tbody>
 					{#each rows as row, i}
 						<tr>
-							<td><input type="text" bind:value={row.id} /></td>
-							<td><input type="text" bind:value={row.name} /></td>
-							<td><input type="number" bind:value={row.age} /></td>
+							<td><input type="text" bind:value={row.EXP_ID} /></td>
+							<td><input type="text" bind:value={row.APP_LAYER_CD} /></td>
+							<td><input type="text" bind:value={row.DETAIL_SEQ_NO} /></td>
+							<td><input type="text" bind:value={row.LEVEL_NO} /></td>
+							<td><input type="text" bind:value={row.LEVEL_SUB} /></td>
+							<td><input type="text" bind:value={row.LEVEL_HINT} /></td>
+							<td><input type="text" bind:value={row.ELEMENT_NM} /></td>
+							<td><input type="text" bind:value={row.DEFAULT_VALUE_TYPE_CD} /></td>
+							<td><input type="text" bind:value={row.START_POS} /></td>
+							<td><input type="text" bind:value={row.WIDTH} /></td>
+							<td><input type="text" bind:value={row.DEFAULT_VALUE} /></td>
+							<td><input type="text" bind:value={row.FORMAT_TYPE_CD} /></td>
+							<td><input type="text" bind:value={row.FORMAT_PARAM} /></td>
+							<td><input type="text" bind:value={row.XML_TAG_NM} /></td>
+							<td><input type="text" bind:value={row.XML_ATTRIBUTE_VALUES} /></td>
+							<td><input type="text" bind:value={row.UPDT_USER} /></td>
+							<td><input type="text" bind:value={row.UPDT_DT} /></td>
 
-							<td>
-								<pre>{buildSQL(row)}</pre>
+							<td class="sql-column">
+								<button 
+									class="sql-toggle-btn" 
+									onclick={() => toggleSQLExpanded(i)}
+									title={expandedRows.has(i) ? 'Collapse SQL' : 'Expand SQL'}
+								>
+									{expandedRows.has(i) ? '▼' : '⋯'}
+								</button>
+								{#if expandedRows.has(i)}
+									<pre class="sql-preview">{buildSQL(row)}</pre>
+								{/if}
 							</td>
 
-						<td>
-							<button onclick={() => removeRow(i)}>✕</button>
-						</td>
+							<td>
+								<button onclick={() => removeRow(i)}>✕</button>
+							</td>
 						</tr>
 					{/each}
 				</tbody>
@@ -412,30 +448,58 @@ VALUES (
 		overflow: auto;
 		min-height: 0;
 		border-radius: 8px;
+		position: relative;
 	}
 
 	table { 
 		border-collapse: collapse; 
-		width: 100%;
+		width: max-content;
+		min-width: 100%;
 		background: #1a1a1a;
 		border-radius: 8px;
-		overflow: hidden;
 		box-shadow: 0 4px 20px rgba(255, 69, 0, 0.15);
 	}
 	
 	th, td { 
 		border: 1px solid rgba(255, 69, 0, 0.3);
-		padding: 12px;
+		padding: 8px 12px;
 		color: #ff6347;
+		white-space: nowrap;
+		min-width: 100px;
 	}
 
 	th {
 		background: #0a0a0a;
 		font-weight: 600;
 		text-transform: uppercase;
-		font-size: 0.85rem;
+		font-size: 0.75rem;
 		letter-spacing: 0.5px;
+		position: sticky;
+		top: 0;
+		z-index: 10;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 	}
+
+	/* Specific column widths */
+	th:nth-child(1), td:nth-child(1) { min-width: 80px; }  /* EXP_ID */
+	th:nth-child(2), td:nth-child(2) { min-width: 120px; } /* APP_LAYER_CD */
+	th:nth-child(3), td:nth-child(3) { min-width: 120px; } /* DETAIL_SEQ_NO */
+	th:nth-child(4), td:nth-child(4) { min-width: 90px; }  /* LEVEL_NO */
+	th:nth-child(5), td:nth-child(5) { min-width: 90px; }  /* LEVEL_SUB */
+	th:nth-child(6), td:nth-child(6) { min-width: 100px; } /* LEVEL_HINT */
+	th:nth-child(7), td:nth-child(7) { min-width: 120px; } /* ELEMENT_NM */
+	th:nth-child(8), td:nth-child(8) { min-width: 160px; } /* DEFAULT_VALUE_TYPE_CD */
+	th:nth-child(9), td:nth-child(9) { min-width: 90px; }  /* START_POS */
+	th:nth-child(10), td:nth-child(10) { min-width: 80px; } /* WIDTH */
+	th:nth-child(11), td:nth-child(11) { min-width: 150px; } /* DEFAULT_VALUE */
+	th:nth-child(12), td:nth-child(12) { min-width: 130px; } /* FORMAT_TYPE_CD */
+	th:nth-child(13), td:nth-child(13) { min-width: 130px; } /* FORMAT_PARAM */
+	th:nth-child(14), td:nth-child(14) { min-width: 110px; } /* XML_TAG_NM */
+	th:nth-child(15), td:nth-child(15) { min-width: 160px; } /* XML_ATTRIBUTE_VALUES */
+	th:nth-child(16), td:nth-child(16) { min-width: 100px; } /* UPDT_USER */
+	th:nth-child(17), td:nth-child(17) { min-width: 140px; } /* UPDT_DT */
+	th:nth-child(18), td:nth-child(18) { min-width: 60px; }  /* SQL Statement - collapsed by default */
+	th:nth-child(19), td:nth-child(19) { min-width: 60px; }  /* Delete button */
 
 	td {
 		background: #1a1a1a;
@@ -465,16 +529,42 @@ VALUES (
 		color: rgba(255, 99, 71, 0.4);
 	}
 
-	pre { 
-		margin: 0; 
-		font-size: 0.75rem;
+	/* SQL Column Styles */
+	.sql-column {
+		position: relative;
+		vertical-align: top;
+	}
+
+	.sql-toggle-btn {
+		background: rgba(255, 69, 0, 0.2);
+		color: #ff6347;
+		border: 1px solid rgba(255, 69, 0, 0.4);
+		padding: 4px 12px;
+		border-radius: 4px;
+		font-size: 1rem;
+		cursor: pointer;
+		transition: all 0.2s;
+		min-width: 40px;
+	}
+
+	.sql-toggle-btn:hover {
+		background: rgba(255, 69, 0, 0.3);
+		border-color: rgba(255, 69, 0, 0.6);
+	}
+
+	.sql-preview { 
+		margin: 8px 0 0 0; 
+		font-size: 0.7rem;
 		color: #ff8c7a;
 		background: #0a0a0a;
 		padding: 8px;
 		border-radius: 4px;
 		border: 1px solid rgba(255, 69, 0, 0.2);
-		max-width: 300px;
+		max-width: 400px;
+		min-width: 300px;
 		overflow-x: auto;
+		white-space: pre-wrap;
+		word-break: break-all;
 	}
 
 	button { 

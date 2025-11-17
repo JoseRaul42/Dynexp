@@ -5,8 +5,8 @@
 		database: '',
 		user: '',
 		password: '',
-		encrypt: true,
-		trustServerCertificate: false
+		encrypt: false,
+		trustServerCertificate: true
 	});
 
 	let testResult = $state<{
@@ -107,13 +107,15 @@
 				<input type="checkbox" bind:checked={config.encrypt} />
 				Encrypt connection
 			</label>
+			<span class="help-text">Enable for Azure SQL or encrypted connections</span>
 		</div>
 
 		<div class="form-group checkbox-group">
 			<label>
 				<input type="checkbox" bind:checked={config.trustServerCertificate} />
-				Trust server certificate
+				Trust server certificate (recommended for local SQL Server)
 			</label>
+			<span class="help-text">Enable this for local SQL Server instances or self-signed certificates</span>
 		</div>
 
 		<button type="submit" class="test-button" disabled={testing}>
@@ -274,6 +276,16 @@
 		margin: 0;
 		font-size: 0.9rem;
 		color: #ff8c7a;
+	}
+
+	.help-text {
+		display: block;
+		font-size: 0.8rem;
+		color: #ff8c7a;
+		margin-top: 0.25rem;
+		margin-left: 1.5rem;
+		font-weight: normal;
+		opacity: 0.8;
 	}
 </style>
 
