@@ -1,13 +1,67 @@
 <script lang="ts">
 	// Example initial data
-	let rows = $state<Array<{ id: string | number; name: string; age: string | number }>>([
-		{ id: 1, name: 'Alice', age: 25 },
-		{ id: 2, name: 'Bob', age: 30 }
+	let rows = $state<Array<{ EXP_ID: string | number; APP_LAYER_CD: string; DETAIL_SEQ_NO: number; LEVEL_NO: number; LEVEL_SUB: number; LEVEL_HINT: string | number; ELEMENT_NM: string; DEFAULT_VALUE_TYPE_CD: string; START_POS: number; WIDTH: number; DEFAULT_VALUE: string; FORMAT_TYPE_CD: string | number, FORMAT_PARAM: string | number; XML_TAG_NM: string | number; XML_ATTRIBUTE_VALUES: string | number; UPDT_USER: string; UPDT_DT: string; }>>([
+		{
+			EXP_ID: 1,
+			APP_LAYER_CD: "",
+			DETAIL_SEQ_NO: 1,
+			LEVEL_NO: 1,
+			LEVEL_SUB: 0,
+			LEVEL_HINT: "",
+			ELEMENT_NM: "",
+			DEFAULT_VALUE_TYPE_CD: "",
+			START_POS: 1,
+			WIDTH: 5,
+			DEFAULT_VALUE: "",
+			FORMAT_TYPE_CD: "",
+			FORMAT_PARAM: "",
+			XML_TAG_NM: "",
+			XML_ATTRIBUTE_VALUES: "",
+			UPDT_USER: "SYSTEM",
+			UPDT_DT: "2025-01-01 00:00:00"
+		},
+		{
+			EXP_ID: 2,
+			APP_LAYER_CD: "",
+			DETAIL_SEQ_NO: 2,
+			LEVEL_NO: 1,
+			LEVEL_SUB: 0,
+			LEVEL_HINT: "",
+			ELEMENT_NM: "",
+			DEFAULT_VALUE_TYPE_CD: "",
+			START_POS: 1,
+			WIDTH: 5,
+			DEFAULT_VALUE: "",
+			FORMAT_TYPE_CD: "",
+			FORMAT_PARAM: "",
+			XML_TAG_NM: "",
+			XML_ATTRIBUTE_VALUES: "",
+			UPDT_USER: "SYSTEM",
+			UPDT_DT: "2025-01-01 00:00:00"
+		}
 	]);
 
 	// Add an empty row
 	function addRow() {
-		rows = [...rows, { id: "", name: "", age: "" }];
+		rows = [...rows, 			{
+				EXP_ID: "",
+				APP_LAYER_CD: "",
+				DETAIL_SEQ_NO: 0,
+				LEVEL_NO: 0,
+				LEVEL_SUB: 0,
+				LEVEL_HINT: "",
+				ELEMENT_NM: "",
+				DEFAULT_VALUE_TYPE_CD: "",
+				START_POS: 0,
+				WIDTH: 0,
+				DEFAULT_VALUE: "",
+				FORMAT_TYPE_CD: "",
+				FORMAT_PARAM: "",
+				XML_TAG_NM: "",
+				XML_ATTRIBUTE_VALUES: "",
+				UPDT_USER: "",
+				UPDT_DT: ""
+			}];
 	}
 
 	// Remove a row
@@ -15,14 +69,34 @@
 		rows = rows.filter((_, i) => i !== index);
 	}
 
-	// Build SQL for a row (example: INSERT)
-	function buildSQL(row: { id: string | number; name: string; age: string | number }) {
-		// Escape single quotes for safety (minimal example)
+function buildSQL(row: any) {
 		const esc = (v: string | number) => String(v).replace(/'/g, "''");
+
 		return `
-INSERT INTO users (id, name, age)
-VALUES ('${esc(row.id)}', '${esc(row.name)}', '${esc(row.age)}');
-		`.trim();
+INSERT INTO users (
+	EXP_ID, APP_LAYER_CD, DETAIL_SEQ_NO, LEVEL_NO, LEVEL_SUB, LEVEL_HINT,
+	ELEMENT_NM, DEFAULT_VALUE_TYPE_CD, START_POS, WIDTH, DEFAULT_VALUE,
+	FORMAT_TYPE_CD, FORMAT_PARAM, XML_TAG_NM, XML_ATTRIBUTE_VALUES, UPDT_USER, UPDT_DT
+)
+VALUES (
+	'${esc(row.EXP_ID)}',
+	'${esc(row.APP_LAYER_CD)}',
+	'${esc(row.DETAIL_SEQ_NO)}',
+	'${esc(row.LEVEL_NO)}',
+	'${esc(row.LEVEL_SUB)}',
+	'${esc(row.LEVEL_HINT)}',
+	'${esc(row.ELEMENT_NM)}',
+	'${esc(row.DEFAULT_VALUE_TYPE_CD)}',
+	'${esc(row.START_POS)}',
+	'${esc(row.WIDTH)}',
+	'${esc(row.DEFAULT_VALUE)}',
+	'${esc(row.FORMAT_TYPE_CD)}',
+	'${esc(row.FORMAT_PARAM)}',
+	'${esc(row.XML_TAG_NM)}',
+	'${esc(row.XML_ATTRIBUTE_VALUES)}',
+	'${esc(row.UPDT_USER)}',
+	'${esc(row.UPDT_DT)}'
+);`.trim();
 	}
 
 	let copySuccess = $state(false);
@@ -107,8 +181,22 @@ VALUES ('${esc(row.id)}', '${esc(row.name)}', '${esc(row.age)}');
 				<thead>
 					<tr>
 						<th>EXP_ID</th>
-						<th>SEQ_NO</th>
+						<th>APP_LAYER_CD</th>
+						<th>DETAIL_SEQ_NO</th>
+						<th>LEVEL_NO</th>
+						<th>LEVEL_SUB</th>
+						<th>LEVEL_HINT</th>
+						<th>LEVEL_HINT</th>
+						<th>DEFAULT_VALUE_TYPE_CD</th>
+						<th>START_POS</th>
+						<th>WIDTH</th>
 						<th>DEFAULT_VALUE</th>
+						<th>FORMAT_TYPE_CD</th>
+						<th>FORMAT_PARAM</th>
+						<th>XML_TAG_NM</th>
+						<th>XML_ATTRIBUTE_VALUES</th>
+						<th>UPDT_USER</th>
+						<th>UPDT_DT</th>
 						<th>SQL Statement</th>
 						<th></th>
 					</tr>
